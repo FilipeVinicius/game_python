@@ -95,6 +95,7 @@ def jogo():
     contador = 0
     while vida_jogador1 > 0 and vida_jogador2 > 0:  #Enquanto ninguém tiver a vida zerada, o jogo rola normalmente
         contador += 1
+        print()
         print(f"TURNO {contador}")
         print()
         print(f"Jogador 1 está com {vida_jogador1} de vida.")
