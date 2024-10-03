@@ -1,18 +1,7 @@
-#Problemas / TO DO!!!
-
-#2: Add ITEMS!!!!
-#3: At the end of the Battle function, some more comments could be added, as well as in the last game function
-
-#Changed
-#1: Dice and attack rolls, if dice is 20 its always max, if its between the minimum then the dmg will be the average between the min and the max
-#2: Changed the whole "choose to do max or min attack", because it wasnt asked for. Instead, I used it for defense. Defense uses the acerto maximo, but it will always halve the damage
-#3: Added a random name for the game LMAO it's the literal translation of a baldurs gate 3 place ...... You guys can change it
-#4: Added A BUNCH of comments, though the portuguese might be dodgy cos i used the translator :P so check it plssss
-
-#Primeiro, importamos o módulo random, que nos permite gerar números aleatórios
+      #Primeiro, importamos o módulo random, que nos permite gerar números aleatórios
 import random
 
-#Listas para definir a vida, ataque minimo, ataque máximo, acerto minimo e acerto máximo do guerreiro, do mago e do ladino
+#Listas para definir a vida, ataque minimo, ataque máximo, acerto minimo e defesa máxima do guerreiro, do mago e do ladino
 guerreiro = [60, 7, 14, 6, 12]
 mago = [40, 9, 18, 7, 15]
 ladino = [30, 8, 20, 7, 15]
@@ -26,10 +15,11 @@ vida_jogador1 = 0
 vida_jogador2 = 0
 stats_jogador1 = []
 stats_jogador2 = []
-boost = 0
+pocao_usada_jogador1 = False
+pocao_usada_jogador2 = False
 
 #Função que permite que ambos os jogadores escolham sua classe
-def escolher_clase(jogador):
+def escolher_classe(jogador):
     #Mensagem de boas-vindas, que também informa as turmas
     print("Bem-vindo ao jogo: 'Encontro das Sombras'! Guerreiros, Magos e Ladinos esperam por você.")
     print("A aventura começa! Primeiro, escolha sua classe: 1 para ser Guerreiro, 2 para Mago ou 3 para Ladino.")
@@ -83,17 +73,15 @@ def batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2):
         print(f"Jogador 1 está com {vida_jogador1} de vida.")
         print(f"Jogador 2 está com {vida_jogador2} de vida.")
 
-       
-
         #Loop dos turnos dos jogadores
         for jogador in range(1,3):
             if jogador == 1:
-                escolha = int(input("Jogador 1, digite 1 para atacar, 2 para defender ou 3 para usar um item "))
+                escolha = int(input("Jogador 1, digite 1 para atacar, 2 para defender ou 3 para usar um item: "))
                 stats = stats_jogador1
                 vida_atual = vida_jogador1
 
             else:
-                escolha = int(input("Jogador 2, digite 1 para atacar, 2 para defender ou 3 para usar um item "))
+                escolha = int(input("Jogador 2, digite 1 para atacar, 2 para defender ou 3 para usar um item: "))
                 stats = stats_jogador2
                 vida_atual = vida_jogador2
 
@@ -103,7 +91,7 @@ def batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2):
                 dado = random.randint(1, 20)
                 print(f"A rolagem do dado resultou em: {dado}.")
                 
-                #A chance de defesa depende do acerto máximo do jogador
+                #A chance de defesa depende da defesa maxima do jogador
                 if dado >= stats[4]:
                     if jogador == 1:
                         defesa_jogador1 = True
@@ -134,17 +122,16 @@ def batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2):
                     #Se o dado for 20, sendo um acerto crítico, então é o dano máximo
                     if dado == 20:
                         dano = stats[2]
-
                     
 
                     #Se algum dos jogadores se defender, o dano que toma se tem que dividir
                     if jogador == 1 and defesa_jogador2:
                         dano = dano // 2
-                        print("A defesa reduz o dano tomado por Jogador 1 pela metade!")
+                        print("A defesa reduz o dano tomado por Jogador 2 pela metade!")
                     
                     elif jogador == 2 and defesa_jogador1:
                         dano = dano // 2
-                        print("A defesa reduz o dano tomado por Jogador 2 pela metade!")
+                        print("A defesa reduz o dano tomado por Jogador 1 pela metade!")
 
                     if jogador == 1:
                         vida_jogador2 -= dano
@@ -161,21 +148,38 @@ def batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2):
                     
                     else:
                         print(f"Ataque errou! A vida do jogador 1 não é afetada.")
+
+            #Se a escolha for um item
             elif escolha == 3:
-                print(f"jogador {jogador} decidiu utilizar um item, digite 1 para o anel de força, ou 2 para poçao de vida")
-                escolha_item = int(input(""))
-                if escolha_item == 2:
+                print(f"jogador {jogador} decidiu utilizar um item, digite 1 para usar a poção (apenas um uso) ou digite qualquer outra coisa para cancelar.")
+                escolha_item = (input(""))
+
+                if escolha_item == 1:
                     if jogador == 1:
-                        vida_jogador1 +=10
-                        print(f"o {jogador} foi curado, sua vida atual agora é: {vida_jogador1}")
-                    if jogador == 2:
-                        vida_jogador2 +=10
-                        print(f"o {jogador} foi curado, sua vida atual agora é: {vida_jogador2}")
-                elif escolha_item == 1:
-                    boost += 1
+                        if not pocao_usada_jogador1:
+                            vida_jogador1 +=10
+                            pocao_usada_jogador1 = True
+                            print(f"O Jogador 1 foi curado, sua vida atual agora é: {vida_jogador1}")
+
+                        else:
+                            print("O Jogador 1 já usou a poção!")
+
+                
+                    elif jogador == 2:
+                        if not pocao_usada_jogador2:
+                            vida_jogador2 +=10
+                            pocao_usada_jogador2 = True
+                            print(f"O Jogador 2 foi curado, sua vida atual agora é: {vida_jogador2}")
+                        
+                        else:
+                            print("O Jogador 2 já usou a poção!")
+            
+                else:
+                    continue
+    
                 
 
-
+    #Condição para encerrar o jogo, informar o vencedor, se a vida de alguém for menor ou igual a 0
     if vida_jogador1 <= 0:
         print("Jogador 2 venceu!")
         print("Obrigado por jogar 'Encontro das Sombras'! Esperamos que tenha se divertido!")
@@ -186,9 +190,9 @@ def batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2):
 
 #Função do jogo final
 def jogo():
-    escolher_clase("Jogador 1")
-    escolher_clase("Jogador 2")
+    escolher_classe("Jogador 1")
+    escolher_classe("Jogador 2")
     batalha(vida_jogador1, stats_jogador1, vida_jogador2, stats_jogador2)
 
 #Usando a função para iniciar o jogo
-jogo()
+jogo()          
